@@ -32,9 +32,9 @@ it('coordinateRegex_northAndWestNoDecimals_parsesSuccessfully', () => {
 it('coordinateRegex_southAndEastNoDecimals_parsesSuccessfully', () => {
     let coordinates = parseCoordinates('120S 130E');
 
-    expect(coordinates.x).toBe(130);
+    expect(coordinates.x).toBe(-130);
     expect(coordinates.y).toBe(0);
-    expect(coordinates.z).toBe(120);
+    expect(coordinates.z).toBe(-120);
     expect(coordinates.yaw).toBe(0);
 });
 
@@ -65,9 +65,9 @@ it('coordinateRegex_allValuesNoDecimals_parsesSuccessfully', () => {
 it('coordinateRegex_allValuesWithDecimals_parsesSuccessfully', () => {
     let coordinates = parseCoordinates('145.76S 175.34E 120.44A 2700');
 
-    expect(coordinates.x).toBe(175.34);
+    expect(coordinates.x).toBe(-175.34);
     expect(coordinates.y).toBe(120.44);
-    expect(coordinates.z).toBe(145.76);
+    expect(coordinates.z).toBe(-145.76);
     expect(coordinates.yaw).toBe(2700);
 });
 
@@ -106,5 +106,16 @@ function parseCoordinates(value) {
  */
 function getValueFromCoordinatePiece(value) {
     let matches = /^\s*\d*\.?\d+/.exec(value);
-    return matches ? parseFloat(matches[0]) : 0;
+    let dValue = 0;
+
+    if (matches) {
+        dValue = parseFloat(matches[0]);
+
+        if(/[SE]/i.exec(value))
+        {
+            dValue *= -1;
+        }        
+    }
+    
+    return dValue;
 }
