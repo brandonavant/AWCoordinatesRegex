@@ -62,6 +62,9 @@ it('coordinateRegex_allValuesNoDecimals_parsesSuccessfully', () => {
     expect(coordinates.yaw).toBe(3599);
 });
 
+/**
+ * Tests that given all value (each with decimals) the X, Y, Z, and Yaw are matched accordingly.
+ */
 it('coordinateRegex_allValuesWithDecimals_parsesSuccessfully', () => {
     let coordinates = parseCoordinates('145.76S 175.34E 120.44A 2700');
 
