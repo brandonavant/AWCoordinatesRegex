@@ -1,25 +1,27 @@
 /**
  * Regular expression which takes an Active Worlds coordinates formatted string and matches the X, Y, Z, and Yaw parts.
  */
-let coordinateRegex = /^(\d*\.?\d+[NS]){1}\s+(\d*\.?\d+[EW]){1}(\s+\d*\.?\d+[A])?(\s+\d+)?/i;
+let coordinateRegex = /^(\w+){1}\s+(\d*\.?\d+[NS]){1}\s+(\d*\.?\d+[EW]){1}(\s+\d*\.?\d+[A])?(\s+\d+)?/i;
 
 /**
  * Enumeration of Regex group indices.
  */
 const groups = {
     CAPTURE: 0,
-    NS: 1,
-    EW: 2,
-    ALT: 3,
-    YAW: 4
+    WORLD: 1,
+    NS: 2,
+    EW: 3,
+    ALT: 4,
+    YAW: 5
 };
 
 /**
  * Tests that given only N and W values (no decimals), the X and Z are matched accordingly.
  */
 it('coordinateRegex_northAndWestNoDecimals_parsesSuccessfully', () => {
-    let coordinates = parseCoordinates('120N 130W');
+    let coordinates = parseCoordinates('AW 120N 130W');
 
+    expect(coordinates.world.toLowerCase()).toBe('aw');
     expect(coordinates.x).toBe(130);
     expect(coordinates.y).toBe(0);
     expect(coordinates.z).toBe(120);
@@ -30,8 +32,9 @@ it('coordinateRegex_northAndWestNoDecimals_parsesSuccessfully', () => {
  * Tests that given only S and E values (no decimals), the X and Z are matched accordingly.
  */
 it('coordinateRegex_southAndEastNoDecimals_parsesSuccessfully', () => {
-    let coordinates = parseCoordinates('120S 130E');
+    let coordinates = parseCoordinates('AWTeen 120S 130E');
 
+    expect(coordinates.world.toLowerCase()).toBe('awteen');
     expect(coordinates.x).toBe(-130);
     expect(coordinates.y).toBe(0);
     expect(coordinates.z).toBe(-120);
@@ -42,8 +45,9 @@ it('coordinateRegex_southAndEastNoDecimals_parsesSuccessfully', () => {
  * Tests that given only N and W values (with decimals), the X and Z are matched accordingly.
  */
 it('coordinateRegex_northAndWestWithDecimals_parsesSuccessfully', () => {
-    let coordinates = parseCoordinates('120.58N 4.62W');
+    let coordinates = parseCoordinates('Yellow 120.58N 4.62W');
 
+    expect(coordinates.world.toLowerCase()).toBe('yellow');
     expect(coordinates.x).toBe(4.62);
     expect(coordinates.y).toBe(0);
     expect(coordinates.z).toBe(120.58);
@@ -54,8 +58,9 @@ it('coordinateRegex_northAndWestWithDecimals_parsesSuccessfully', () => {
  * Tests that given all values (with no decimals), the X, Y, Z, and Yaw are matched accordingly.
  */
 it('coordinateRegex_allValuesNoDecimals_parsesSuccessfully', () => {
-    let coordinates = parseCoordinates('120N 4W 0A 3599');
+    let coordinates = parseCoordinates('Droog 120N 4W 0A 3599');
 
+    expect(coordinates.world.toLowerCase()).toBe('droog');
     expect(coordinates.x).toBe(4);
     expect(coordinates.y).toBe(0);
     expect(coordinates.z).toBe(120);
@@ -66,8 +71,9 @@ it('coordinateRegex_allValuesNoDecimals_parsesSuccessfully', () => {
  * Tests that given all value (each with decimals) the X, Y, Z, and Yaw are matched accordingly.
  */
 it('coordinateRegex_allValuesWithDecimals_parsesSuccessfully', () => {
-    let coordinates = parseCoordinates('145.76S 175.34E 120.44A 2700');
+    let coordinates = parseCoordinates('AWGames 145.76S 175.34E 120.44A 2700');
 
+    expect(coordinates.world.toLowerCase()).toBe('awgames');
     expect(coordinates.x).toBe(-175.34);
     expect(coordinates.y).toBe(120.44);
     expect(coordinates.z).toBe(-145.76);
@@ -95,6 +101,7 @@ function parseCoordinates(value) {
     let execResults = coordinateRegex.exec(value);
 
     return {
+        world: execResults[groups.WORLD],
         x: getValueFromCoordinatePiece(execResults[groups.EW]),
         y: getValueFromCoordinatePiece(execResults[groups.ALT]),
         z: getValueFromCoordinatePiece(execResults[groups.NS]),
